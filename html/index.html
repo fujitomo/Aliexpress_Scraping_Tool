@@ -1,0 +1,49 @@
+<html>
+    <head       >
+        <title>AliExpressデータ取得ツール</title>
+        <link rel="stylesheet" type="text/css" href="./style.css">
+        <link rel="stylesheet" type="text/css" href="./reset.css">
+    </head>
+    <body>
+        <div class="wrapper">
+            <header class="header">
+                <h1><string class="title-aliexpress">Aliexpress</string>データ取得ツール</h2>
+            </header>
+            <main class="main">
+                <div class="search-box">
+                    <div class="search-box__txt_title">取得対象のURL：</div><input id="url" type="text" class="search-box__txt"></input>
+                    <br>
+                    <div class="search-box__btn"> 
+                        <button id="search" class="search-box__btn__design">データ取得</button>
+                    </div>
+                </div> 
+                <div>
+                    <textarea id="result" class="log-view-area"></textarea>
+                </div>
+        </div>
+        <script type="text/javascript" src="./eel.js"></script>
+        <script>
+            search.addEventListener('click', () => {
+                //alert(serch_word.value)
+                const button = document.getElementById("search");
+                button.disabled = "disabled";
+                button.classList.add('search-box__btn__design-process');
+                button.textContent  = "処理中"
+                eel.selenium(url.value)
+            })
+
+            eel.expose(view_log_js)
+            function view_log_js(text){
+                result.value += text + "\n"
+            }
+
+            eel.expose(button_process_del)
+            function button_process_del(){
+                const button = document.getElementById("search");
+                button.classList.remove('search-box__btn__design-process');
+                button.textContent  = "データ取得"
+                button.disabled = null
+            }
+        </script>
+    </body>
+</html>

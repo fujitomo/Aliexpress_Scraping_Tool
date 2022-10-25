@@ -1,0 +1,65 @@
+@import "https://use.fontawesome.com/releases/v5.13.0/css/all.css";
+
+.header {
+	font-size: 25px;
+	margin: 20px;
+	text-align: left;
+}
+
+.title-aliexpress {
+	color: red;
+	font-size: 30px;
+}
+
+.wrapper {
+	text-align: center;
+	margin: 20px;
+}
+
+.main {
+	margin: 20px;
+	width: 680px;
+}
+
+.search-box {
+	padding-right: 11px;
+}
+
+.search-box__txt_title {
+	font-size: 13px;
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.search-box__txt {
+	width: 552px;
+	display: inline-block;
+}
+
+.search-box__btn {
+	text-align: right;
+	margin: 10px 2px;
+}
+
+.log-view-area {
+	width: 650px;
+	height: 450px;
+}
+
+.search-box__btn__design {
+	margin: 1px 0; /* 前後の隙間 */
+	padding: 1px; /* 塗りの余白 */
+	font-size: 15px; /* フォントサイズ */
+	background-color: #1aa1ff; /* 背景色 */
+	color: #FFF; /* テキストカラー */
+	cursor: pointer; /* カーソルを指マークに */
+	border-radius: 3px; /* 角の丸み */
+	border: 0; /* 枠線を消す */
+	transition: 0.3s; /* ホバーの変化を滑らかに */
+	width: 120px;
+	height: 30px;
+}
+
+.search-box__btn__design-process {
+	background-color: gray !important; /* 背景色 */
+}
