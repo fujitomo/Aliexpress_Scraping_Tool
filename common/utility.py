@@ -12,8 +12,9 @@ from bs4 import BeautifulSoup as bs
 def now_timestamp():
     return dt.now().strftime("%Y-%m-%d_%H_%M_%S")
 
+
 def now_timestamp_jp():
-    return dt.now().strftime("%Y年%m月%d日%H時%M分%秒：")
+    return dt.now().strftime("%Y年%m月%d日%H時%M分%S秒：")
 
 
 def list_to_bool(l: list):
@@ -27,10 +28,7 @@ def list_to_bool(l: list):
 def create_proxy_dict(id, password, host, port, proxy_flg=True):
     if proxy_flg:
         proxy_url = f"http://{id}:{password}@{host}:{port}"
-        return {
-            "http": proxy_url,
-            "https": proxy_url
-        }
+        return {"http": proxy_url, "https": proxy_url}
     else:
         return {}
 
@@ -51,10 +49,10 @@ def split_list(l, n):
     リストをサブリストに分割する
     :param l: リスト
     :param n: サブリストの要素数
-    :return: 
+    :return:
     """
     for idx in range(0, len(l), n):
-        yield l[idx:idx + n]
+        yield l[idx : idx + n]
 
 
 def fetch_currency_rate(base: str, to: str):
@@ -66,6 +64,7 @@ def fetch_currency_rate(base: str, to: str):
         return res_dict["rate"][base + to]
     except:
         raise Exception(f"exchange currency error: {base}->{to}")
+
 
 # URLチェック関数
 def checkURL(url: str):

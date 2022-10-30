@@ -17,11 +17,17 @@ from common.utility import get_global_ip, now_timestamp
 
 logger = set_logger(__name__)
 
-class SeleniumManager():
 
-    def __init__(self, use_headless: bool = True, 
-                 use_proxy:bool=False, proxy_user:str=None, proxy_pass:str=None, 
-                 proxy_host:str=None, proxy_port:str=None):
+class SeleniumManager:
+    def __init__(
+        self,
+        use_headless: bool = True,
+        use_proxy: bool = False,
+        proxy_user: str = None,
+        proxy_pass: str = None,
+        proxy_host: str = None,
+        proxy_port: str = None,
+    ):
         self.use_headless = use_headless
         self.proxy_user = proxy_user
         self.proxy_pass = proxy_pass
@@ -32,45 +38,49 @@ class SeleniumManager():
         self.chrome = self.start_chrome()
 
     def start_chrome(self):
-        '''
+        """
         ChromeDriverを起動してブラウザを開始する
-        '''
+        """
         # Chromeドライバーの読み込み
         self.options = ChromeOptions()
 
         # ヘッドレスモードの設定
         if self.use_headless:
             logger.info("ヘッドレスモード")
-            self.options.add_argument('--headless')
-        
+            self.options.add_argument("--headless")
+
         # プロキシ設定
         if self.use_proxy and self.proxy_user != None:
             logger.info("プロキシーON")
-            self._add_proxy_option() # Proxy設定
+            self._add_proxy_option()  # Proxy設定
 
-        self.options.add_argument('--user-agent=' + HEADER.USER_AGENT) #　リクエストヘッダ
-        self.options.add_argument('log-level=3') 
-        self.options.add_argument('--ignore-certificate-errors')
-        self.options.add_argument('--ignore-ssl-errors')
-        self.options.add_argument('--user-data-dir=' + os.path.join(os.getcwd(),"profile"))
-        #self.options.add_argument('--incognito')          # シークレットモードの設定を付与
+        self.options.add_argument("--user-agent=" + HEADER.USER_AGENT)  # 　リクエストヘッダ
+        self.options.add_argument("log-level=3")
+        self.options.add_argument("--ignore-certificate-errors")
+        self.options.add_argument("--ignore-ssl-errors")
+        self.options.add_argument(
+            "--user-data-dir=" + os.path.join(os.getcwd(), "profile")
+        )
+        # self.options.add_argument('--incognito')          # シークレットモードの設定を付与
         # self.options.add_argument('--no-sandbox')          # docker環境では必須
         # self.options.add_argument('disable-infobars') # AmazonLinux用
         # self.options.add_argument("--disable-gpu")
-        
+
         # ChromeのWebDriverオブジェクトを作成する。
         try:
-            driver = Chrome(ChromeDriverManager().install(), chrome_options=self.options)
+            driver = Chrome(
+                ChromeDriverManager().install(), chrome_options=self.options
+            )
             logger.info("chrome driver起動成功")
             return driver
         except Exception as e:
             logger.error(f"driver起動エラー:{e}")
             raise Exception(f"driver起動エラー:{e}")
-    
+
     def _add_proxy_option(self):
-        '''
+        """
         Proxyをセットするための内部関数
-        '''
+        """
         manifest_json = """
         {
             "version": "1.0.0",
@@ -121,19 +131,24 @@ class SeleniumManager():
                     {urls: ["<all_urls>"]},
                     ['blocking']
         );
-        """ % (self.proxy_host, self.proxy_port, self.proxy_user, self.proxy_pass)
+        """ % (
+            self.proxy_host,
+            self.proxy_port,
+            self.proxy_user,
+            self.proxy_pass,
+        )
 
-        pluginfile = 'proxy_auth_plugin.zip'
+        pluginfile = "proxy_auth_plugin.zip"
 
-        with zipfile.ZipFile(pluginfile, 'w') as zp:
+        with zipfile.ZipFile(pluginfile, "w") as zp:
             zp.writestr("manifest.json", manifest_json)
             zp.writestr("background.js", background_js)
             self.options.add_extension(pluginfile)
 
     def wait_for_element(self, element_name: str, element_kind: str, wait_limit=100):
-        '''
+        """
         指定の要素が表示されるまで待つ
-        '''
+        """
         wait = WebDriverWait(self.driver, wait_limit)  # 指定要素が表示されるまで待つ
         if element_kind == "ID":
             by = By.ID
@@ -145,13 +160,16 @@ class SeleniumManager():
             by = By.NAME
         else:
             by = By.CSS_SELECTOR
-        wait.until(expected_conditions.visibility_of_element_located(
-            (by, element_name)))
+        wait.until(
+            expected_conditions.visibility_of_element_located((by, element_name))
+        )
 
-    def select_element_by_name(self, name: str, select_text: str, mode: str = "", by: str = "NAME"):
-        '''
+    def select_element_by_name(
+        self, name: str, select_text: str, mode: str = "", by: str = "NAME"
+    ):
+        """
         Select要素から指定の名称に一致する選択肢を選択する
-        '''
+        """
         if by == "NAME":
             select_element = self.chrome.find_element_by_name(name)
         elif by == "ID":
@@ -167,12 +185,12 @@ class SeleniumManager():
         return select_object.first_selected_option
 
     def click_element_by_css_selector(self, selector):
-        '''
+        """
         指定の要素をクリックする
-        return 
+        return
             True : クリック出来た場合
             False: クリックできなかった場合
-        '''
+        """
         elms = self.chrome.find_elements_by_css_selector(selector)
         if len(elms) >= 1:
             elms[0].click()
@@ -180,25 +198,23 @@ class SeleniumManager():
         return False
 
     def get_text_element_by_css_selector(self, selector):
-        '''
+        """
         指定の要素のテキストを取得する
         取得できなかった場合は空文字を返す
-        '''
+        """
         elms = self.chrome.find_elements_by_css_selector(selector)
         if len(elms) >= 1:
             return elms[0].text
         return ""
 
     def save_screenshot(self, folder_path="screen_shot"):
-        '''
+        """
         スクリーンショットを保存する
-        '''
+        """
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
-        page_width = self.chrome.execute_script(
-            'return document.body.scrollWidth')
-        page_height = self.chrome.execute_script(
-            'return document.body.scrollHeight')
+        page_width = self.chrome.execute_script("return document.body.scrollWidth")
+        page_height = self.chrome.execute_script("return document.body.scrollHeight")
         self.chrome.set_window_size(page_width, page_height)
         filename = f"error_{now_timestamp(mode='FILE')}.png"
         filepath = os.path.join(os.getcwd(), folder_path, filename)
@@ -206,16 +222,16 @@ class SeleniumManager():
         print(self.chrome.get_screenshot_as_file(filepath))
 
     def exchange_soup(self) -> BeautifulSoup:
-        '''
+        """
         BeautifulSoup形式に変換する
-        '''
+        """
         return BeautifulSoup(self.chrome.page_source, features="html.parser")
 
     def quit(self):
-        '''
+        """
         ブラウザを閉じる
-        '''
+        """
         self.chrome.quit()
 
-    #def __del__(self):
+    # def __del__(self):
     #    self.quit()
