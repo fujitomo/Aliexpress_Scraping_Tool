@@ -1,3 +1,12 @@
+"""デスクトップアプリケーション起動・終了処理
+
+* デスクトップアプリケーション起動・終了処
+
+Todo:
+    * なし
+
+"""
+
 # -*- coding: utf-8 -*-
 
 import socket
@@ -18,6 +27,13 @@ ALLOW_EXTENSIONS = [".html", ".css", ".js", ".ico"]
 
 
 def start(appName, endpoint, size):  # 画面生成
+    """デスクトップアプリケーション起動
+
+    Attributesリケーション用ファイルの保存場所
+       endpoint： 起動するページ
+       size: 起動時の画面サイズ
+       
+    """
     eel.init(appName, allowed_extensions=ALLOW_EXTENSIONS)
     # 未使用ポート取得
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,5 +49,13 @@ def start(appName, endpoint, size):  # 画面生成
     eel.start(endpoint, options=options, size=size, suppress_error=True)
 
 
-def exit(arg1, arg2):  # 終了時の処理
-    sys.exit(0)
+def exit(route, websockets):  # 終了時の処理
+    """デスクトップアプリケーション終了
+
+    Attributes
+       route: 開いたURL
+       websockets: 残りのソケット (多くのウィンドウでページを開いた場合)    
+    """
+    if not websockets:
+       sys.exit(0)
+    

@@ -1,11 +1,19 @@
-﻿import os
+﻿"""Selenium関係の処理
+
+* Selenium関係の処理
+
+Todo:
+    * なし
+
+"""
+
+import os
 import zipfile
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,12 +21,17 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from common.const import *
 from common.logger import set_logger
-from common.utility import get_global_ip, now_timestamp
+from common.utility import now_timestamp
 
 logger = set_logger(__name__)
 
 
 class SeleniumManager:
+    """SeleniumManagerクラス
+    Note:
+        ChromeドライバでSelenium関係の処理を行う
+    """
+
     def __init__(
         self,
         use_headless: bool = True,
@@ -27,7 +40,19 @@ class SeleniumManager:
         proxy_pass: str = None,
         proxy_host: str = None,
         proxy_port: str = None,
-    ):
+    ):        
+        """初期化
+       
+        Attributes
+        use_headless: Google Driverのヘッドレスモードを設定　
+                      TRUE: ヘッドレスモード　FALSE: ブラウザモード
+        use_proxy: proxyを使用するかの設定
+                   TRUE: 使用する　FALSE: 使用しない
+        proxy_pass: proxyのパスワード
+        proxy_host: proxyのアドレス
+        proxy_port: proxyのポート
+        
+        """
         self.use_headless = use_headless
         self.proxy_user = proxy_user
         self.proxy_pass = proxy_pass
@@ -40,6 +65,9 @@ class SeleniumManager:
     def start_chrome(self):
         """
         ChromeDriverを起動してブラウザを開始する
+        
+        Returns:
+        WebDraiver:開始したdriver
         """
         # Chromeドライバーの読み込み
         self.options = ChromeOptions()
@@ -146,8 +174,14 @@ class SeleniumManager:
             self.options.add_extension(pluginfile)
 
     def wait_for_element(self, element_name: str, element_kind: str, wait_limit=100):
-        """
-        指定の要素が表示されるまで待つ
+        """指定の要素が表示されるまで待つ
+       
+        Attributes
+        element_name: 表示されるまで待つ要素名
+        element_kind: 何の要素か指定する
+                      ID: 要素ID  CSS_SELECTOR: CSSセレクター NAME: 要素名
+        wait_limit: 最大待ち時間
+        
         """
         wait = WebDriverWait(self.driver, wait_limit)  # 指定要素が表示されるまで待つ
         if element_kind == "ID":
@@ -167,8 +201,19 @@ class SeleniumManager:
     def select_element_by_name(
         self, name: str, select_text: str, mode: str = "", by: str = "NAME"
     ):
-        """
-        Select要素から指定の名称に一致する選択肢を選択する
+        """Select要素から指定の名称に一致する選択肢を選択する
+       
+        Attributes
+        name: 要素名または要素ID
+        select_text: 
+        mode:選択の設定
+             VALUE: 値属性に基づいてオプションを選択します 他: 表示されているテキストに基づいてオプションを選択します  
+        by: 要素名または要素IDかを設定
+            NAME: 要素名  ID: 要素ID 他: CSSセレクタ―
+        
+        Returns:
+        property:選択されているオプション
+        
         """
         if by == "NAME":
             select_element = self.chrome.find_element_by_name(name)
@@ -185,9 +230,12 @@ class SeleniumManager:
         return select_object.first_selected_option
 
     def click_element_by_css_selector(self, selector):
-        """
-        指定の要素をクリックする
-        return
+        """指定の要素をクリックする
+        
+        Attributes
+        selector: CSSセレクタ―
+        
+        Returns:
             True : クリック出来た場合
             False: クリックできなかった場合
         """
@@ -201,6 +249,13 @@ class SeleniumManager:
         """
         指定の要素のテキストを取得する
         取得できなかった場合は空文字を返す
+        
+        Attributes
+        selector: CSSセレクタ―
+        
+        Returns:
+            要素が取得できた場合: 取得オブジェクト
+            要素が取得できた場合: 空文字
         """
         elms = self.chrome.find_elements_by_css_selector(selector)
         if len(elms) >= 1:
@@ -210,6 +265,9 @@ class SeleniumManager:
     def save_screenshot(self, folder_path="screen_shot"):
         """
         スクリーンショットを保存する
+        
+        Attributes
+        folder_path: スクリーンショット保存先
         """
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
@@ -224,6 +282,9 @@ class SeleniumManager:
     def exchange_soup(self) -> BeautifulSoup:
         """
         BeautifulSoup形式に変換する
+        
+        Returns:
+        BeautifulSoup: BeautifulSoupに変換したオブジェクト
         """
         return BeautifulSoup(self.chrome.page_source, features="html.parser")
 

@@ -1,7 +1,17 @@
-import datetime
+"""AliexpressItemクラス
 
+* スクレイピングした情報格納用オブジェクト
+
+Todo:
+    * なし
+
+"""
 
 class AliexpressItem:
+    """AliexpressItemクラス
+    Note:
+        スクレイピングした情報格納用オブジェクト
+    """
     def __init__(
         self,
         name: str = None,
@@ -20,6 +30,18 @@ class AliexpressItem:
         discount_rate: float = None,
         favorite_count: int = None,
     ):
+        """初期化
+       
+        Attributes
+        use_headless: Google Driverのヘッドレスモードを設定　
+                      TRUE: ヘッドレスモード　FALSE: ブラウザモード
+        use_proxy: proxyを使用するかの設定
+                   TRUE: 使用する　FALSE: 使用しない
+        proxy_pass: proxyのパスワード
+        proxy_host: proxyのアドレス
+        proxy_port: proxyのポート
+        
+        """
         self.name = name
         self.max_price = max_price
         self.min_price = min_price
@@ -37,9 +59,20 @@ class AliexpressItem:
         self.discount_rate = discount_rate
 
     def to_dict(self):
+        """
+        プロパティ一覧をJSONにして返す
+        
+        Returns:
+        dict[str,Any]:プロパティ一覧
+               
+        """
         return self.__dict__.copy()
 
     def merge(self, item):
+        """
+        引数itemの値でプロパティ値をマージする
+               
+        """
         for key, value in self.__dict__.items():
             if item.__dict__[key] is None:
                 continue

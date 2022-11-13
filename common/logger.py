@@ -1,3 +1,12 @@
+"""ログ機能
+
+* ログ情報をlogファイルに出力する
+
+Todo:
+    * なし
+
+"""
+
 import os
 import logging
 from datetime import datetime
@@ -11,6 +20,15 @@ MAX_LOG_COUNT = 100
 
 
 def set_logger(name):
+    """ログ出力
+
+    Attributes
+       name: 実行するモジュール名　
+             例：__name__
+    
+    Returns: Logger: ロガー
+       
+    """
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
@@ -42,6 +60,8 @@ def set_logger(name):
 
 
 def delete_backlog():
+    """出力済みログを削除する
+    """
     # 過去ログは削除
     files = sorted(
         glob.glob(f"{LOG_DIR_NAME}/*"), key=lambda f: os.stat(f).st_mtime, reverse=False

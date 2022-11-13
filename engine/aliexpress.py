@@ -50,43 +50,50 @@ class AliexpressScraping:
         """
         self.chrome.quit()
 
-    # def login(self):
-    #     """アプリ終了処理
-    #     """
-    #     self.chrome.get(self.LOGIN_URL)
-    #     try:
-    #         while True:
-    #             if self.chrome.find_elements_by_css_selector(".fm-logined") >= 1:
-    #                 self.chrome.find_element_by_css_selector(".fm-button").click()
-    #                 logger.info("already login")
-    #                 break
-    #             if self.chrome.current_url in self.ALIEXPRESS_DOMAIN_URL:
-    #                 logger.info("login completed")
-    #                 break
-    #             time.sleep(3)
-    #             logger.info("waitting for login")
-    #     except Exception as e:
-    #         logger.error(f"login error: {e}")
+    def login(self):
+        """アプリ終了処理
+        """
+        self.chrome.get(self.LOGIN_URL)
+        try:
+            while True:
+                if self.chrome.find_elements_by_css_selector(".fm-logined") >= 1:
+                    self.chrome.find_element_by_css_selector(".fm-button").click()
+                    logger.info("already login")
+                    break
+                if self.chrome.current_url in self.ALIEXPRESS_DOMAIN_URL:
+                    logger.info("login completed")
+                    break
+                time.sleep(3)
+                logger.info("waitting for login")
+        except Exception as e:
+            logger.error(f"login error: {e}")
 
-    # def fetch_item(self, url: str) -> AliexpressItem:
-    #     logger.info(f"fetch_item > url: {url}")
-    #     self.chrome.get(url)
-    #     item_dict = self.chrome.execute_script("return window.runParams")
-    #     item = self._extract_item_dict(item_dict)
-    #     # pprint(item)
-    #     # with open("item_data_test.json", mode="w", encoding="utf-8_sig") as f:
-    #     #     f.write(json.dumps(item, ensure_ascii=False))
+    def fetch_item(self, url: str) -> AliexpressItem:
+        """商品ページからスクレイピングして結果を返す
+        Attributes
+          url: スクレイピング対象のURL(商品ページ)
+        Returns:
+          AliexpressItem:スクレイピング結果
+        """
+        logger.info(f"fetch_item > url: {url}")
+        self.chrome.get(url)
+        item_dict = self.chrome.execute_script("return window.runParams")
+        item = self._extract_item_dict(item_dict)
+        # pprint(item)
+        # with open("item_data_test.json", mode="w", encoding="utf-8_sig") as f:
+        #     f.write(json.dumps(item, ensure_ascii=False))
 
-    #     return item
+        return item
 
     def fetch_items_url(
         self, url: str, page_limit: int = 10
     ) -> typing.List[AliexpressItem]:
-        """飛ぶ
-        Raises:
-            Exception: flyableがFalseの場合、飛ぶことができない
+        """商品一覧ページからスクレイピングして結果を返す
+        Attributes
+          url: スクレイピング対象のURL(検索結果一覧ページ)
+          page_limit: 検索結果一覧で何ページ分までスクレイピングするかの限界値
         Returns:
-            str: 飛んだことを示すメッセージ
+          List[AliexpressItem]:スクレイピング結果
         """
         items = []
         # ページ数取得
@@ -121,6 +128,13 @@ class AliexpressScraping:
     def fetch_items(
         self, url: str, page_limit: int = 10
     ) -> typing.List[AliexpressItem]:
+        """指定したURLをスクレイピングしてAliexpressItem情報を返す
+        Attributes
+          url: スクレイピング対象のURL(検索結果一覧ページ)
+          page_limit: 検索結果一覧で何ページ分までスクレイピングするかの限界値
+        Returns:
+          List[AliexpressItem]:スクレイピング結果
+        """
         items = self.fetch_items_url(url, page_limit)
 
         eel.view_log_js(
@@ -146,6 +160,12 @@ class AliexpressScraping:
         return items
 
     def _extract_item_dict(self, item_dict: dict) -> AliexpressItem:
+        """取得した情報を加工して結果を返す
+        Attributes
+          item_dict: スクレイピング対象のURL(検索結果一覧ページ)
+        Returns:
+          AliexpressItem:スクレイピング情報を加工した結果
+        """
         data = item_dict.get("data")
         if not data:
             logger.error("data not found")
